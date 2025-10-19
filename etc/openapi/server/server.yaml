@@ -1,0 +1,150 @@
+openapi: 3.0.0
+
+info:
+    title: |
+        Planify app API interfaces
+    version: 1.0.0
+
+paths:
+    /api/info:
+        get:
+            operationId: info
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/InfoOut"
+                    description: |
+                        Проверка доступности сервера
+                408:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorMessage"
+                    description: |
+                        Ошибка на сервере с описанием типа ошибки
+                500:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorMessage"
+                    description: |
+                        Ошибка на сервере с описанием типа ошибки
+
+    /api/getTaskById:
+        post:
+            operationId: getTaskById
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/GetTaskByIdIn"
+            responses:
+                200:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GetTaskByIdOut"
+                    description: |
+                        Получение информации о созданной задаче по ID
+                400:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorMessage"
+                    description: |
+                        Ошибка на сервере с описанием типа ошибки
+                404:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorMessage"
+                    description: |
+                        Ошибка на сервере с описанием типа ошибки
+                408:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorMessage"
+                    description: |
+                        Ошибка на сервере с описанием типа ошибки
+                500:
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorMessage"
+                    description: |
+                        Ошибка на сервере с описанием типа ошибки
+
+components:
+    schemas:
+        Task:
+            type: object
+            required:
+                - id
+                - name
+                - user_id
+                - is_done
+                - planed_to
+                - created_at
+                - planed_from
+                - description
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                name:
+                    type: string
+                    nullable: true
+                is_done:
+                    type: boolean
+                user_id:
+                    type: integer
+                    format: int64
+                planed_to:
+                    type: string
+                    format: date-time
+                    nullable: true
+                created_at:
+                    type: string
+                    format: date-time
+                planed_from:
+                    type: string
+                    format: date-time
+                    nullable: true
+                description:
+                    type: string
+                    nullable: true
+
+        ErrorMessage:
+            type: object
+            required:
+                - message
+            properties:
+                message:
+                    type: string
+
+        InfoOut:
+            type: object
+            required:
+                - status
+            properties:
+                status:
+                    type: string
+
+        GetTaskByIdIn:
+            type: object
+            required:
+                - task_id
+            properties:
+                task_id:
+                    type: string
+                    format: uuid
+                    nullable: false
+
+        GetTaskByIdOut:
+            type: object
+            properties:
+                task:
+                    $ref: "#/components/schemas/Task"

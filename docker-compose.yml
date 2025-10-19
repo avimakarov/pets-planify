@@ -1,0 +1,58 @@
+services:
+    postgres:
+        image: postgres:17.6
+        ports:
+            - "${POSTGRES_PORT}:5432"
+        volumes:
+            - ./data/postgres/:/var/lib/postgresql/data/
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready -d ${POSTGRES_NAME} -U ${POSTGRES_USER}" ]
+            retries: 5
+            timeout: 5s
+            interval: 10s
+        environment:
+            - POSTGRES_DB=${POSTGRES_NAME}
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASW}
+    postgres_migrations:
+        image: makarov0aleksei/migrator
+        volumes:
+            - ./migrations:/db/migrations
+        command: >
+            bash -c "/root/go/bin/goose -dir /db/migrations postgres 'postgresql://${POSTGRES_USER}:${POSTGRES_PASW}@postgres:5432/${POSTGRES_NAME}?sslmode=disable' up"
+        depends_on:
+            postgres:
+                condition: service_healthy
+    bot:
+        build:
+            context: .
+            dockerfile: dockerfile
+        depends_on:
+            postgres_migrations:
+                condition: service_completed_successfully
+        environment:
+            - BOT_TOKEN=${BOT_TOKEN}
+            - POSTGRES_PORT_APP=${POSTGRES_PORT_APP}
+            - POSTGRES_USER_APP=${POSTGRES_USER_APP}
+            - POSTGRES_NAME_APP=${POSTGRES_NAME_APP}
+            - POSTGRES_HOST_APP=${POSTGRES_HOST_APP}
+            - POSTGRES_PASW_APP=${POSTGRES_PASW_APP}
+        command: [ "/app/bot" ]
+
+    server:
+        build:
+            context: .
+            dockerfile: dockerfile
+        ports:
+            - "${APP_PORT}:8080"
+        depends_on:
+            postgres_migrations:
+                condition: service_completed_successfully
+        environment:
+            - BOT_TOKEN=${BOT_TOKEN}
+            - POSTGRES_PORT_APP=${POSTGRES_PORT_APP}
+            - POSTGRES_USER_APP=${POSTGRES_USER_APP}
+            - POSTGRES_NAME_APP=${POSTGRES_NAME_APP}
+            - POSTGRES_HOST_APP=${POSTGRES_HOST_APP}
+            - POSTGRES_PASW_APP=${POSTGRES_PASW_APP}
+        command: [ "/app/server" ]
