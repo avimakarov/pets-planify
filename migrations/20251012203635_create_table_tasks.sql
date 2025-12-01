@@ -2,12 +2,11 @@
 -- +goose StatementBegin
 create table if not exists tasks (
     id uuid not null default gen_random_uuid() primary key,
+    name varchar(300),
     user_id bigint not null,
     is_done boolean not null default false,
-    created_at timestamp not null default current_timestamp,
-
-    name varchar(300),
     planed_to timestamp,
+    created_at timestamp not null default current_timestamp,
     planed_from timestamp,
     description varchar(500)
 );

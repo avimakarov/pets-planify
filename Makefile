@@ -5,7 +5,7 @@ prod.down:
 	COMPOSE_ENV_FILES=./env/.prod docker-compose -f docker-compose.yml down
 
 generate.server:
-	oapi-codegen -generate="types,chi-server" -package=server_gen ./etc/openapi/server/server.yaml > ./internal/generated/openapi/server/server.go
+	oapi-codegen -generate="types,chi-server" -package=server_api_gen ./etc/openapi/server/server.yaml > ./internal/generated/openapi/server/server.go
 
 test.integration:
 	-@echo "Starting integration tests..."
@@ -26,3 +26,5 @@ test.integration.down:
 
 test.integration.drop_data:
 	rm -R ./data
+
+

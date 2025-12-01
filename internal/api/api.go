@@ -1,8 +1,9 @@
 package api
 
 import (
-	"emperror.dev/errors"
 	"time"
+
+	"emperror.dev/errors"
 )
 
 var (
@@ -16,16 +17,16 @@ const (
 )
 
 type API struct {
-	handlerInfo        HandlerInfo
-	handlerGetTaskByID HandlerGetTaskByID
+	handlerHabitGet    HandlerHabitGet
+	handlerHabitUpdate HandlerHabitUpdate
 }
 
 func New(
-	handlerInfo HandlerInfo,
-	handlerGetTaskByID HandlerGetTaskByID,
+	handlerHabitGet HandlerHabitGet,
+	handlerHabitUpdate HandlerHabitUpdate,
 ) *API {
 	return &API{
-		handlerInfo:        handlerInfo,
-		handlerGetTaskByID: handlerGetTaskByID,
+		handlerHabitGet:    handlerHabitGet,
+		handlerHabitUpdate: handlerHabitUpdate,
 	}
 }

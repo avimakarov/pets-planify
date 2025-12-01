@@ -2,122 +2,52 @@ openapi: 3.0.0
 
 info:
     title: |
-        Planify app API interfaces
+        Planify app API interface
     version: 1.0.0
 
 paths:
-    /api/info:
+    /habit/{id}:
         get:
-            operationId: info
+            operationId: habitGet
+            parameters:
+                -   in: path
+                    name: id
+                    schema:
+                        type: string
+                        format: uuid
+                    required: true
             responses:
-                200:
+                '200':
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/InfoOut"
-                    description: |
-                        Проверка доступности сервера
-                408:
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/ErrorMessage"
-                    description: |
-                        Ошибка на сервере с описанием типа ошибки
-                500:
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/ErrorMessage"
-                    description: |
-                        Ошибка на сервере с описанием типа ошибки
-
-    /api/getTaskById:
-        post:
-            operationId: getTaskById
+                                $ref: '#/components/schemas/HabitGetOut'
+                    description: Habit get result
+        put:
+            operationId: habitUpdate
+            parameters:
+                -   in: path
+                    name: id
+                    schema:
+                        type: string
+                        format: uuid
+                    required: true
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: "#/components/schemas/GetTaskByIdIn"
+                            $ref: '#/components/schemas/Habit'
             responses:
-                200:
+                '200':
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/GetTaskByIdOut"
-                    description: |
-                        Получение информации о созданной задаче по ID
-                400:
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/ErrorMessage"
-                    description: |
-                        Ошибка на сервере с описанием типа ошибки
-                404:
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/ErrorMessage"
-                    description: |
-                        Ошибка на сервере с описанием типа ошибки
-                408:
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/ErrorMessage"
-                    description: |
-                        Ошибка на сервере с описанием типа ошибки
-                500:
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/ErrorMessage"
-                    description: |
-                        Ошибка на сервере с описанием типа ошибки
+                                $ref: '#/components/schemas/HabitUpdateOut'
+                    description: Habit update result
 
 components:
     schemas:
-        Task:
-            type: object
-            required:
-                - id
-                - name
-                - user_id
-                - is_done
-                - planed_to
-                - created_at
-                - planed_from
-                - description
-            properties:
-                id:
-                    type: string
-                    format: uuid
-                name:
-                    type: string
-                    nullable: true
-                is_done:
-                    type: boolean
-                user_id:
-                    type: integer
-                    format: int64
-                planed_to:
-                    type: string
-                    format: date-time
-                    nullable: true
-                created_at:
-                    type: string
-                    format: date-time
-                planed_from:
-                    type: string
-                    format: date-time
-                    nullable: true
-                description:
-                    type: string
-                    nullable: true
-
-        ErrorMessage:
+        Error:
             type: object
             required:
                 - message
@@ -125,26 +55,48 @@ components:
                 message:
                     type: string
 
-        InfoOut:
+        Habit:
             type: object
             required:
-                - status
+                - id
+                - name
+                - user_id
+                - chat_id
+                - canceled
+                - created_at
             properties:
-                status:
-                    type: string
-
-        GetTaskByIdIn:
-            type: object
-            required:
-                - task_id
-            properties:
-                task_id:
+                id:
                     type: string
                     format: uuid
-                    nullable: false
-
-        GetTaskByIdOut:
-            type: object
+                name:
+                    type: string
+                    nullable: true
+                user_id:
+                    type: integer
+                    format: int64
+                chat_id:
+                    type: integer
+                    format: int64
+                canceled:
+                    type: boolean
+                created_at:
+                    type: string
+                    format: date-time
+        
+        HabitGetOut:
+            type:
+                object
             properties:
-                task:
-                    $ref: "#/components/schemas/Task"
+                err: 
+                    $ref: '#/components/schemas/Error'
+                habit:
+                    $ref: '#/components/schemas/Habit'
+
+        HabitUpdateOut:
+            type: 
+                object
+            properties:
+                err:
+                    $ref: '#/components/schemas/Error'
+                habit:
+                    $ref: '#/components/schemas/Habit'

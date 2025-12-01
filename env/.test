@@ -1,0 +1,12 @@
+# postgres
+POSTGRES_PORT=8503
+POSTGRES_USER=user001
+POSTGRES_NAME=planify
+POSTGRES_PASW=simplePassword
+
+# postgres_for_app
+POSTGRES_PORT_APP=8503
+POSTGRES_USER_APP=user001
+POSTGRES_NAME_APP=planify
+POSTGRES_HOST_APP=localhost
+POSTGRES_PASW_APP=simplePassword

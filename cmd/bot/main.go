@@ -2,15 +2,16 @@ package main
 
 import (
 	"context"
-	"emperror.dev/errors"
-	"github.com/mymmrac/telego"
-	th "github.com/mymmrac/telego/telegohandler"
 	"log"
 	"os"
 	config_postgres "pets-planify/internal/config/postgres"
-	handler_tgb_create "pets-planify/internal/handler/tgb/create"
-	service_tasks "pets-planify/internal/service/tasks"
-	storage_tasks "pets-planify/internal/storage/tasks"
+	handler_tgb_habits "pets-planify/internal/handler/tgb/habits"
+	service_habits "pets-planify/internal/service/habits"
+	storage_habits "pets-planify/internal/storage/habits"
+
+	"emperror.dev/errors"
+	"github.com/mymmrac/telego"
+	th "github.com/mymmrac/telego/telegohandler"
 )
 
 var (
@@ -40,12 +41,12 @@ func main() {
 		log.Fatalln(errors.Wrap(err, "config_postgres.New.GetConnection"))
 	}
 
-	storageTasks := storage_tasks.New(pgConn)
-	serviceTasks := service_tasks.New(storageTasks)
+	storageHabits := storage_habits.New(pgConn)
+	serviceHabits := service_habits.New(storageHabits)
 
-	handlerTaskCreate := handler_tgb_create.New(bot, serviceTasks)
+	handlerHabits := handler_tgb_habits.New(bot, serviceHabits)
 
-	handler.Handle(handlerTaskCreate.Create, th.CommandEqual(handler_tgb_create.SlugCommandHandler))
+	handler.Handle(handlerHabits.Create, th.CommandEqual(handler_tgb_habits.CommandSlugCreate))
 
 	if startErr := handler.Start(); startErr != nil {
 		log.Fatalln(errors.Wrap(startErr, "handler.Start"))

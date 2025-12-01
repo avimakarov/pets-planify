@@ -2,10 +2,12 @@ package config_postgres
 
 import (
 	"database/sql"
-	"emperror.dev/errors"
 	"fmt"
-	_ "github.com/lib/pq"
+	"log"
 	"os"
+	"strings"
+
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -15,6 +17,22 @@ var (
 	pasw = os.Getenv("POSTGRES_PASW_APP")
 	name = os.Getenv("POSTGRES_NAME_APP")
 )
+
+func init() {
+	v := map[string]string{
+		"POSTGRES_HOST_APP": host,
+		"POSTGRES_PORT_APP": port,
+		"POSTGRES_USER_APP": user,
+		"POSTGRES_PASW_APP": pasw,
+		"POSTGRES_NAME_APP": name,
+	}
+
+	for k, v := range v {
+		if len(strings.TrimSpace(v)) == 0 {
+			log.Fatalln(fmt.Errorf("env is empty: %s", k))
+		}
+	}
+}
 
 type Config struct{}
 
@@ -36,11 +54,11 @@ func (c *Config) dsn() string {
 func (c *Config) GetConnection() (*sql.DB, error) {
 	db, err := sql.Open("postgres", c.dsn())
 	if err != nil {
-		return nil, errors.Wrap(err, "sql.Open")
+		return nil, fmt.Errorf("sql.Open: %w", err)
 	}
 
 	if err := db.Ping(); err != nil {
-		return nil, errors.Wrap(err, "db..Ping")
+		return nil, fmt.Errorf("db..Ping: %w", err)
 	}
 
 	return db, nil

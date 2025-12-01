@@ -1,8 +1,8 @@
 package api
 
 import (
-	"emperror.dev/errors"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -17,6 +17,6 @@ func (a *API) writeResponse(w http.ResponseWriter, body any, statusCode int) {
 	w.WriteHeader(statusCode)
 
 	if _, err := w.Write(enc); err != nil {
-		log.Println(errors.Wrap(err, "w.Write").Error())
+		log.Println(fmt.Errorf("w.Write: %w", err))
 	}
 }

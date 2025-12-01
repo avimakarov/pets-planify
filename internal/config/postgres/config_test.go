@@ -3,14 +3,13 @@
 package config_postgres_test
 
 import (
-	"github.com/stretchr/testify/assert"
 	config_postgres "pets-planify/internal/config/postgres"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConfig_GetConnection(t *testing.T) {
-	cfg := config_postgres.New()
-
-	_, err := cfg.GetConnection()
+	_, err := config_postgres.New().GetConnection()
 	assert.NoError(t, err)
 }
