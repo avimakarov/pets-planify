@@ -1,0 +1,6 @@
+POST http://localhost:3784/login
+Content-Type: application/json
+
+{
+  "email": "avimakarov@mail.ru"
+}

@@ -17,16 +17,13 @@ const (
 )
 
 type API struct {
-	handlerHabitGet    HandlerHabitGet
-	handlerHabitUpdate HandlerHabitUpdate
+	handlerLogin HandlerLogin
 }
 
 func New(
-	handlerHabitGet HandlerHabitGet,
-	handlerHabitUpdate HandlerHabitUpdate,
+	handlerLogin HandlerLogin,
 ) *API {
 	return &API{
-		handlerHabitGet:    handlerHabitGet,
-		handlerHabitUpdate: handlerHabitUpdate,
+		handlerLogin: handlerLogin,
 	}
 }

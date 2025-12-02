@@ -6,97 +6,47 @@ info:
     version: 1.0.0
 
 paths:
-    /habit/{id}:
-        get:
-            operationId: habitGet
-            parameters:
-                -   in: path
-                    name: id
-                    schema:
-                        type: string
-                        format: uuid
-                    required: true
-            responses:
-                '200':
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/HabitGetOut'
-                    description: Habit get result
-        put:
-            operationId: habitUpdate
-            parameters:
-                -   in: path
-                    name: id
-                    schema:
-                        type: string
-                        format: uuid
-                    required: true
+    /login:
+        post:
+            operationId: login
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/Habit'
+                            $ref: '#/components/schemas/LoginIn'
             responses:
                 '200':
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/HabitUpdateOut'
-                    description: Habit update result
+                                $ref: '#/components/schemas/LoginOut'
+                    description: Login confirmation token
 
 components:
     schemas:
-        Error:
-            type: object
-            required:
-                - message
-            properties:
-                message:
-                    type: string
+        Email:
+            type: string
+            format: email
 
-        Habit:
-            type: object
-            required:
-                - id
-                - name
-                - user_id
-                - chat_id
-                - canceled
-                - created_at
-            properties:
-                id:
-                    type: string
-                    format: uuid
-                name:
-                    type: string
-                    nullable: true
-                user_id:
-                    type: integer
-                    format: int64
-                chat_id:
-                    type: integer
-                    format: int64
-                canceled:
-                    type: boolean
-                created_at:
-                    type: string
-                    format: date-time
-        
-        HabitGetOut:
+        ConfirmationToken:
+            type: string
+            format: uuid
+
+        # request - responses
+
+        LoginIn:
             type:
                 object
+            required:
+                - email
             properties:
-                err: 
-                    $ref: '#/components/schemas/Error'
-                habit:
-                    $ref: '#/components/schemas/Habit'
+                email:
+                    $ref: '#/components/schemas/Email'
 
-        HabitUpdateOut:
-            type: 
-                object
+        LoginOut:
+            type: object
+            required:
+                - confirmationToken
             properties:
-                err:
-                    $ref: '#/components/schemas/Error'
-                habit:
-                    $ref: '#/components/schemas/Habit'
+                confirmationToken:
+                    $ref: '#/components/schemas/ConfirmationToken'

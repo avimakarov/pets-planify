@@ -5,6 +5,9 @@ services:
             - "${POSTGRES_PORT}:5432"
         volumes:
             - ./data/postgres/:/var/lib/postgresql/data/
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
         healthcheck:
             test: [ "CMD-SHELL", "pg_isready -d ${POSTGRES_NAME} -U ${POSTGRES_USER}" ]
             retries: 5
@@ -14,6 +17,21 @@ services:
             - POSTGRES_DB=${POSTGRES_NAME}
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASW}
+
+    rabbitmq:
+        image: rabbitmq:3-management-alpine
+        ports:
+            - "${RABBITMQ_PORT_BROKER}:5672"
+            - "${RABBITMQ_PORT_DASHBOARD}:15672"
+        healthcheck:
+            test: rabbitmq-diagnostics -q ping
+            retries: 5
+            timeout: 5s
+            interval: 5s
+        environment:
+            - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+            - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASW}
+
     postgres_migrations:
         image: makarov0aleksei/migrator
         volumes:
@@ -23,21 +41,6 @@ services:
         depends_on:
             postgres:
                 condition: service_healthy
-    bot:
-        build:
-            context: .
-            dockerfile: dockerfile
-        depends_on:
-            postgres_migrations:
-                condition: service_completed_successfully
-        environment:
-            - BOT_TOKEN=${BOT_TOKEN}
-            - POSTGRES_PORT_APP=${POSTGRES_PORT_APP}
-            - POSTGRES_USER_APP=${POSTGRES_USER_APP}
-            - POSTGRES_NAME_APP=${POSTGRES_NAME_APP}
-            - POSTGRES_HOST_APP=${POSTGRES_HOST_APP}
-            - POSTGRES_PASW_APP=${POSTGRES_PASW_APP}
-        command: [ "/app/bot" ]
 
     server:
         build:
@@ -49,10 +52,14 @@ services:
             postgres_migrations:
                 condition: service_completed_successfully
         environment:
-            - BOT_TOKEN=${BOT_TOKEN}
             - POSTGRES_PORT_APP=${POSTGRES_PORT_APP}
             - POSTGRES_USER_APP=${POSTGRES_USER_APP}
             - POSTGRES_NAME_APP=${POSTGRES_NAME_APP}
             - POSTGRES_HOST_APP=${POSTGRES_HOST_APP}
             - POSTGRES_PASW_APP=${POSTGRES_PASW_APP}
+
+            - RABBITMQ_HOST_APP=${RABBITMQ_HOST_APP}
+            - RABBITMQ_PORT_APP=${RABBITMQ_PORT_APP}
+            - RABBITMQ_USER_APP=${RABBITMQ_USER_APP}
+            - RABBITMQ_PASW_APP=${RABBITMQ_PASW_APP}
         command: [ "/app/server" ]
